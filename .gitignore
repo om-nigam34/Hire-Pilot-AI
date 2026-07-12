@@ -1,10 +1,10 @@
-# Environment variables (contains your Groq API key — never commit this)
+# Environment variables
 .env
 
 # Virtual environment
 env/
 
-# Flask instance folder (holds SQLite database)
+# Flask instance folder
 instance/
 
 # Python cache
@@ -12,7 +12,7 @@ __pycache__/
 *.pyc
 *.pyo
 
-# SQLite database files (in case any exist outside instance/)
+# SQLite database files
 *.db
 *.sqlite
 *.sqlite3
