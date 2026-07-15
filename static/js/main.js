@@ -1,24 +1,5 @@
-/* =========================================================================
-   HirePilot AI — frontend logic
-   No frameworks: fetch() to the Flask API, plain DOM updates.
-   Sections:
-     1. Gauge (SVG instrument dial)      - drawGauge()
-     2. Dropzone + textarea wiring        - setup in initInputs()
-     3. Form submit -> /api/analyze       - handleAnalyzeSubmit()
-     4. Rendering results into the DOM    - renderResults()
-     5. Flight log (history)              - loadSessionIntoView()
-   ========================================================================= */
-
 (() => {
   "use strict";
-
-  // -----------------------------------------------------------------------
-  // 1. Gauge — a semicircular instrument dial, not a progress bar.
-  //    Convention: angle is measured clockwise from straight up (0deg = top).
-  //    value 0   -> -90deg (pointing left)
-  //    value 50  ->   0deg (pointing straight up)
-  //    value 100 -> +90deg (pointing right)
-  // -----------------------------------------------------------------------
 
   const GAUGE_CX = 100;
   const GAUGE_CY = 105;
@@ -42,7 +23,6 @@
     const endAngle = valueToAngle(endValue);
     const start = polarPoint(startAngle, radius);
     const end = polarPoint(endAngle, radius);
-    // Sweep is always <=180deg here, so large-arc-flag is 0; sweep-flag 1 = clockwise.
     return `M ${start.x.toFixed(2)} ${start.y.toFixed(2)} A ${radius} ${radius} 0 0 1 ${end.x.toFixed(2)} ${end.y.toFixed(2)}`;
   }
 
@@ -62,7 +42,7 @@
     };
     svg.appendChild(track(GAUGE_R));
 
-    // Colored zones (red / amber / green), matching an altimeter-style readout
+    // Colored zones, matching an altimeter-style readout
     const zones = [
       { from: 0, to: 40, color: "#7A3232" },
       { from: 40, to: 70, color: "#7A5A22" },
@@ -76,12 +56,12 @@
       path.setAttribute("stroke-width", "6");
       path.setAttribute("stroke-linecap", "butt");
       path.setAttribute("transform", `translate(0, 0)`);
-      // Sit the zone ring just inside the track
       path.setAttribute("d", describeArc(zone.from, zone.to, GAUGE_R - 12));
       svg.appendChild(path);
     });
 
     // Tick marks at 0/25/50/75/100
+    
     [0, 25, 50, 75, 100].forEach(tick => {
       const angle = valueToAngle(tick);
       const outer = polarPoint(angle, GAUGE_R + 10);
@@ -96,7 +76,6 @@
       svg.appendChild(line);
     });
 
-    // Needle — drawn pointing straight up by default, then rotated to angle(score)
     const needleAngle = valueToAngle(score);
     const needleGroup = document.createElementNS(ns, "g");
     needleGroup.setAttribute("transform", `rotate(${needleAngle} ${GAUGE_CX} ${GAUGE_CY})`);
@@ -124,8 +103,6 @@
   function drawGauge(score) {
     buildGaugeSVG(0);
     document.getElementById("gauge-value").textContent = "0";
-    // Animate the needle sweeping up to the real score rather than snapping,
-    // it reads like an instrument coming online instead of a UI popping in.
     const steps = 24;
     let i = 0;
     const interval = setInterval(() => {
@@ -137,9 +114,7 @@
     }, 16);
   }
 
-  // -----------------------------------------------------------------------
   // 2. Inputs — dropzone + textarea wiring
-  // -----------------------------------------------------------------------
 
   function initInputs() {
     const dropzone = document.getElementById("dropzone");
@@ -192,9 +167,7 @@
     });
   }
 
-  // -----------------------------------------------------------------------
   // 3. Form submit -> POST /api/analyze
-  // -----------------------------------------------------------------------
 
   const LOADING_MESSAGES = [
     "Extracting text from resume…",
@@ -270,9 +243,7 @@
     }
   }
 
-  // -----------------------------------------------------------------------
   // 4. Rendering results
-  // -----------------------------------------------------------------------
 
   function renderTagList(containerId, items, emptyText) {
     const ul = document.getElementById(containerId);
@@ -300,8 +271,6 @@
       return;
     }
 
-    // Match rewritten bullets back to their originals; fall back to index
-    // alignment if the model rephrased the "original" field slightly.
     weakBullets.forEach((weak, idx) => {
       const match =
         (rewrittenBullets || []).find(r => r.original && r.original.trim() === weak.original.trim()) ||
@@ -380,9 +349,7 @@
     renderQuestions(generation.interview_questions);
   }
 
-  // -----------------------------------------------------------------------
   // 5. Flight log (history)
-  // -----------------------------------------------------------------------
 
   async function refreshFlightLog() {
     try {
@@ -411,7 +378,7 @@
         list.appendChild(li);
       });
     } catch {
-      // Non-critical - history staying stale isn't worth surfacing an error for.
+      // Non-critical - history.
     }
   }
 
@@ -441,9 +408,7 @@
     });
   }
 
-  // -----------------------------------------------------------------------
   // Init
-  // -----------------------------------------------------------------------
 
   document.addEventListener("DOMContentLoaded", () => {
     initInputs();
