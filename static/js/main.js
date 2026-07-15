@@ -43,6 +43,7 @@
     svg.appendChild(track(GAUGE_R));
 
     // Colored zones, matching an altimeter-style readout
+
     const zones = [
       { from: 0, to: 40, color: "#7A3232" },
       { from: 40, to: 70, color: "#7A5A22" },
@@ -61,7 +62,6 @@
     });
 
     // Tick marks at 0/25/50/75/100
-    
     [0, 25, 50, 75, 100].forEach(tick => {
       const angle = valueToAngle(tick);
       const outer = polarPoint(angle, GAUGE_R + 10);
@@ -349,7 +349,7 @@
     renderQuestions(generation.interview_questions);
   }
 
-  // 5. Flight log (history)
+  // 5. Flight log -> history
 
   async function refreshFlightLog() {
     try {

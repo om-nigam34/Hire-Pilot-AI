@@ -1,5 +1,6 @@
 :root {
   /* Color */
+
   --bg: #0B1220;
   --panel: #121A2B;
   --panel-alt: #0F1729;
@@ -20,6 +21,7 @@
   --font-mono: 'IBM Plex Mono', 'Consolas', monospace;
 
   /* Layout */
+  
   --radius: 10px;
   --gap: 24px;
 }

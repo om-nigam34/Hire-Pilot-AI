@@ -28,6 +28,7 @@
   <main class="deck">
 
     <!-- LEFT: Flight Plan (inputs) -->
+
     <section class="panel panel-input" aria-labelledby="flightplan-heading">
       <div class="panel-header">
         <span class="panel-eyebrow">01 · INPUT</span>
@@ -82,6 +83,7 @@
     </section>
 
     <!-- RIGHT: Readout (results) -->
+
     <section class="panel panel-readout" aria-labelledby="readout-heading">
       <div class="panel-header">
         <span class="panel-eyebrow">02 · READOUT</span>
@@ -89,18 +91,21 @@
       </div>
 
       <!-- Empty state -->
+
       <div class="readout-empty" id="readout-empty">
         <div class="readout-empty-icon">◎</div>
         <p>Awaiting flight plan. Upload a resume and job description, then run the analysis to bring the instruments online.</p>
       </div>
 
       <!-- Loading state -->
+
       <div class="readout-loading" id="readout-loading" hidden>
         <div class="radar-sweep" aria-hidden="true"></div>
         <p id="loading-message">Reading instruments…</p>
       </div>
 
       <!-- Results -->
+
       <div class="readout-results" id="readout-results" hidden>
 
         <div class="gauge-row">
@@ -145,6 +150,7 @@
       </div>
 
       <!-- Error state -->
+       
       <div class="readout-error" id="readout-error" hidden>
         <div class="readout-error-icon">⚠</div>
         <p id="readout-error-message">Something went wrong.</p>
