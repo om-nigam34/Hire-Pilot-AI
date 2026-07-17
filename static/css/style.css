@@ -136,7 +136,7 @@ h2, h3 { font-family: var(--font-display); margin: 0; }
   50% { opacity: 0.4; }
 }
 
-/* Deck (main two-column layout) */
+/* Deck -- main two-column layout */
 
 .deck {
   position: relative;
@@ -402,7 +402,7 @@ textarea#jd-textarea:focus-visible {
   to { transform: rotate(360deg); }
 }
 
-/* Readout panel — results */
+/* Readout panel — result panel */
 
 .gauge-row {
   display: flex;
