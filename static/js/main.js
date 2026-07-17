@@ -28,7 +28,7 @@
 
   function buildGaugeSVG(score) {
     const svg = document.getElementById("gauge-svg");
-    svg.innerHTML = ""; // clear previous render
+    svg.innerHTML = ""; // Clear previous render
 
     const ns = "http://www.w3.org/2000/svg";
     const track = radius => {
@@ -49,6 +49,7 @@
       { from: 40, to: 70, color: "#7A5A22" },
       { from: 70, to: 100, color: "#1F6B4C" },
     ];
+
     zones.forEach(zone => {
       const path = document.createElementNS(ns, "path");
       path.setAttribute("d", describeArc(zone.from, zone.to, GAUGE_R));
@@ -140,6 +141,7 @@
         fileInput.click();
       }
     });
+    
     fileInput.addEventListener("change", () => setFilename(fileInput.files[0]));
 
     ["dragenter", "dragover"].forEach(evt =>
