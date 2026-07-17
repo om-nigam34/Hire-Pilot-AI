@@ -141,7 +141,7 @@
         fileInput.click();
       }
     });
-    
+
     fileInput.addEventListener("change", () => setFilename(fileInput.files[0]));
 
     ["dragenter", "dragover"].forEach(evt =>
@@ -211,6 +211,7 @@
       errorEl.hidden = false;
       return;
     }
+    
     if (textarea.value.trim().length < 40) {
       errorEl.textContent = "Paste the full job description (it looks too short).";
       errorEl.hidden = false;
@@ -397,6 +398,7 @@
         evaluation: data.evaluation,
         generation: data.generation,
       });
+
       showState("readout-results");
     } catch (err) {
       document.getElementById("readout-error-message").textContent = err.message;
