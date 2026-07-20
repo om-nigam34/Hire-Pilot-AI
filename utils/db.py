@@ -1,20 +1,3 @@
-"""
-db.py
------
-SQLite storage for past sessions, so a user can come back and see their
-history over time. Uses Python's built-in sqlite3 - no separate DB server.
-
-Schema (one row per analysis run):
-    id                INTEGER PRIMARY KEY
-    created_at        TEXT     (ISO timestamp)
-    jd_title          TEXT     (first line of JD, used as a label in history)
-    resume_text       TEXT
-    jd_text           TEXT
-    similarity_score  REAL
-    evaluation_json   TEXT     (JSON string: missing_skills, keyword_gaps, weak_bullets, overall_summary)
-    generation_json   TEXT     (JSON string: rewritten_bullets, interview_questions)
-"""
-
 import sqlite3
 import json
 import datetime
@@ -49,8 +32,7 @@ def _connect():
 
 
 def init_db() -> None:
-    """Create the sessions table if it doesn't exist yet. Safe to call every
-    app startup."""
+    # Create the sessions table if it doesn't exist yet. Safe to call every app startup.
     with _connect() as conn:
         conn.execute(_SCHEMA)
         conn.commit()
@@ -58,7 +40,7 @@ def init_db() -> None:
 
 def save_session(resume_text: str, jd_text: str, similarity_score: float,
                   evaluation: dict, generation: dict) -> int:
-    """Persist one completed analysis run. Returns the new row's id."""
+    # Persist one completed analysis run. Returns the new row's id.
     jd_title = _derive_jd_title(jd_text)
     with _connect() as conn:
         cursor = conn.execute(
@@ -83,8 +65,8 @@ def save_session(resume_text: str, jd_text: str, similarity_score: float,
 
 
 def list_sessions(limit: int = 20) -> list[dict]:
-    """Return recent sessions, most recent first, WITHOUT the full text
-    fields (keeps the history list endpoint lightweight)."""
+    # Return recent sessions, most recent first, WITHOUT the full text
+    # fields (keeps the history list endpoint lightweight).
     with _connect() as conn:
         rows = conn.execute(
             """
@@ -99,7 +81,7 @@ def list_sessions(limit: int = 20) -> list[dict]:
 
 
 def get_session(session_id: int) -> dict | None:
-    """Return the full record for one session, or None if it doesn't exist."""
+    # Return the full record for one session, or None if it doesn't exist.
     with _connect() as conn:
         row = conn.execute(
             "SELECT * FROM sessions WHERE id = ?", (session_id,)
@@ -114,8 +96,8 @@ def get_session(session_id: int) -> dict | None:
 
 
 def _derive_jd_title(jd_text: str, max_len: int = 60) -> str:
-    """Use the first non-empty line of the JD as a human-readable label for
-    the history list (e.g. 'Software Engineer - Backend')."""
+    # Use the first non-empty line of the JD as a human-readable label for
+    # the history list.
     for line in jd_text.splitlines():
         line = line.strip()
         if line:
