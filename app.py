@@ -44,10 +44,10 @@ def analyze():
         return jsonify(error="Please upload your resume as a PDF."), 400
 
     if not resume_file.filename.lower().endswith(".pdf"):
-        return jsonify(error="Only PDF resumes are supported right now."), 400
+        return jsonify(error="Only PDF resumes are supported."), 400
 
     if len(jd_text) < MIN_JD_CHARS:
-        return jsonify(error="Paste the full job description (it looks too short)."), 400
+        return jsonify(error="Paste the full job description - It looks too short."), 400
 
     #  Step 1: PDF -> text
 
