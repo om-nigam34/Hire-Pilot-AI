@@ -21,25 +21,25 @@ The project is under active development.
 ## Architecture
 
 ```
-Resume (PDF)
+Resume -> PDF
      │
      ▼
-Text Extraction  (pdfplumber / PyPDF2)
+Text Extraction
      │
      ▼
-Embedding + Cosine Similarity  (sentence-transformers)
+Embedding + Cosine Similarity
      │
      ▼
-LLM Call -1 —> Evaluate  (API)
+LLM Call -1 —> Evaluate
      │
      ▼
-LLM Call -2 —> Generate Improvements  (API, chained on Call #1's output)
+LLM Call -2 —> Generate Improvements
      │
      ▼
 SQLite Session Storage
      │
      ▼
-JSON Response → Frontend Dashboard
+JSON Response -> Frontend Dashboard
 ```
 
 | Stage | Description |
@@ -58,7 +58,7 @@ JSON Response → Frontend Dashboard
 | Layer | Technology |
 |---|---|
 | Backend | Flask, Python 3.10 |
-| AI / Inference | LLM API (chained calls) |
+| AI / Inference | LLM API |
 | Semantic Scoring | sentence-transformers |
 | PDF Parsing | PyPDF2 / pdfplumber |
 | Data Storage | SQLite |
