@@ -7,7 +7,6 @@
 [![LLM API](https://img.shields.io/badge/LLM_API-Inference-6366F1?style=flat-square)]()
 [![SentenceTransformers](https://img.shields.io/badge/Embeddings-SentenceTransformers-FFD21E?style=flat-square)](https://www.sbert.net/)
 [![SQLite](https://img.shields.io/badge/SQLite-Storage-07405E?style=flat-square&logo=sqlite&logoColor=white)](https://www.sqlite.org/)
-[![Status](https://img.shields.io/badge/Status-In_Development-orange?style=flat-square)]()
 
 ---
 
@@ -31,10 +30,10 @@ Text Extraction  (pdfplumber / PyPDF2)
 Embedding + Cosine Similarity  (sentence-transformers)
      │
      ▼
-LLM Call #1 — Evaluate  (API)
+LLM Call -1 —> Evaluate  (API)
      │
      ▼
-LLM Call #2 — Generate Improvements  (API, chained on Call #1's output)
+LLM Call -2 —> Generate Improvements  (API, chained on Call #1's output)
      │
      ▼
 SQLite Session Storage
