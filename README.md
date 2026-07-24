@@ -2,7 +2,7 @@
 
 **An AI-powered resume evaluation pipeline that scores resumes against job descriptions using semantic similarity and chained LLM reasoning.**
 
-[![Python](https://img.shields.io/badge/Python-3.10-3776AB?style=flat-square&logo=python&logoColor=white)](https://www.python.org/)
+[![Python](https://img.shields.io/badge/Python-3776AB?style=flat-square&logo=python&logoColor=white)](https://www.python.org/)
 [![Flask](https://img.shields.io/badge/Flask-Backend-000000?style=flat-square&logo=flask&logoColor=white)](https://flask.palletsprojects.com/)
 [![LLM API](https://img.shields.io/badge/LLM_API-Inference-6366F1?style=flat-square)]()
 [![SentenceTransformers](https://img.shields.io/badge/Embeddings-SentenceTransformers-FFD21E?style=flat-square)](https://www.sbert.net/)
@@ -13,8 +13,6 @@
 ## Overview
 
 HirePilot AI takes a resume and a job description and returns a structured, explainable fit assessment — not a vague "looks good" chat response. It combines a deterministic embedding-based similarity score with a two-stage LLM reasoning pipeline: one pass evaluates the resume against the job description, and a second, chained pass generates concrete improvement suggestions based on that evaluation. Every session is persisted, so results are both reproducible and reviewable.
-
-The project is under active development.
 
 ---
 
