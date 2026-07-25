@@ -1,20 +1,5 @@
-"""
-llm_client.py
--------------
-Wraps the two chained LLM calls that make this an *agent* rather than a
-score-and-done tool:
-
-  1. evaluate_resume()      -> finds skill gaps, keyword gaps, weak bullets
-  2. generate_improvements() -> takes call 1's findings and produces
-                                 rewritten bullets + likely interview
-                                 questions, grounded in those specific gaps
-
-Both calls ask the model for structured JSON so app.py can use the result
-programmatically instead of scraping free text.
-
-Uses Groq's OpenAI-compatible chat completions API. Swap GROQ_MODEL in .env
-if you want a different model.
-"""
+# Two chained API calls: evaluate_resume() -> generate_improvements()
+# Both ask the model for structured JSON so app.py doesn't parse free text.
 
 import os
 import json
@@ -22,12 +7,12 @@ from groq import Groq
 
 
 class LLMClientError(Exception):
-    """Raised for missing config or a call that fails after retrying."""
+    # raised when the LLM API call fails
     pass
 
 
 class LLMResponseError(Exception):
-    """Raised when the model's response can't be parsed as the expected JSON."""
+    # raised when the model doesn't return valid JSON
     pass
 
 
@@ -42,12 +27,11 @@ def _get_client() -> Groq:
 
 
 def _get_model() -> str:
-    return os.environ.get("GROQ_MODEL", "openai/gpt-oss-120b")
+    return os.environ.get("GROQ_MODEL", "openai/gpt-oss-120b")  # override via .env
 
 
 def _call_json(client: Groq, system_prompt: str, user_prompt: str) -> dict:
-    """Shared helper: call the model, ask for JSON, parse it, and raise a
-    clear error if the model didn't return valid JSON."""
+    # ask the model for JSON, raise a clear error if it isn't
     try:
         response = client.chat.completions.create(
             model=_get_model(),
@@ -72,9 +56,7 @@ def _call_json(client: Groq, system_prompt: str, user_prompt: str) -> dict:
         ) from exc
 
 
-# ---------------------------------------------------------------------------
-# Call 1: evaluate
-# ---------------------------------------------------------------------------
+#  Call 1: evaluate
 
 _EVALUATE_SYSTEM_PROMPT = """\
 You are a blunt, experienced technical recruiter. You evaluate a resume \
@@ -112,16 +94,11 @@ RESUME:
 
 
 def evaluate_resume(resume_text: str, jd_text: str) -> dict:
-    """
-    LLM call 1. Returns a dict with keys:
-    missing_skills, keyword_gaps, weak_bullets, overall_summary.
-    """
     client = _get_client()
     user_prompt = _EVALUATE_USER_TEMPLATE.format(jd_text=jd_text, resume_text=resume_text)
     result = _call_json(client, _EVALUATE_SYSTEM_PROMPT, user_prompt)
 
-    # Normalize shape defensively so a slightly-off model response doesn't
-    # crash the frontend - missing keys become empty defaults.
+    # fallback to empty defaults if the model skips a key
     return {
         "missing_skills": result.get("missing_skills", []),
         "keyword_gaps": result.get("keyword_gaps", []),
@@ -130,9 +107,7 @@ def evaluate_resume(resume_text: str, jd_text: str) -> dict:
     }
 
 
-# ---------------------------------------------------------------------------
-# Call 2: generate (chained on call 1's output)
-# ---------------------------------------------------------------------------
+#  Call 2: generate -> chained on call 1's output
 
 _GENERATE_SYSTEM_PROMPT = """\
 You are a career coach who writes sharp, specific resume bullets and asks \
@@ -171,10 +146,6 @@ GAP ANALYSIS FROM PREVIOUS STEP:
 
 
 def generate_improvements(evaluation: dict, resume_text: str, jd_text: str) -> dict:
-    """
-    LLM call 2, chained on call 1's output. Returns a dict with keys:
-    rewritten_bullets, interview_questions.
-    """
     client = _get_client()
     user_prompt = _GENERATE_USER_TEMPLATE.format(
         jd_text=jd_text,
