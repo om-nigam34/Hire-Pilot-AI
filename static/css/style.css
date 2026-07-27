@@ -1,5 +1,5 @@
 :root {
-  /* ---- Color: one accent, restrained semantics ---- */
+  /* Color: one accent, restrained semantics */
 
   --bg: #0B0D12;
   --surface: #14161D;
@@ -72,7 +72,7 @@ a { color: var(--accent); }
 
 svg { display: block; }
 
-/* ---- Top bar ---- */
+/* Top bar  */
 
 .topbar {
   display: flex;
@@ -151,7 +151,7 @@ svg { display: block; }
 
 .topbar-link svg { width: 13px; height: 13px; }
 
-/* ---- Deck / layout ---- */
+/* Deck / layout */
 
 .deck {
   max-width: 1320px;
@@ -198,7 +198,7 @@ svg { display: block; }
   max-width: 42ch;
 }
 
-/* ---- Form: dropzone, textarea, button ---- */
+/* Form: dropzone, textarea, button */
 
 .field-label {
   display: block;
@@ -351,7 +351,7 @@ textarea#jd-textarea:focus-visible {
   100% { opacity: 1; transform: translateX(0); }
 }
 
-/* ---- History (formerly "Flight Log") ---- */
+/* History --> formerly "Flight Log" */
 
 .flightlog { margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--border); }
 
@@ -438,7 +438,7 @@ textarea#jd-textarea:focus-visible {
   padding: 8px 4px;
 }
 
-/* ---- Readout panel: empty / loading / error ---- */
+/* Readout panel: empty / loading / error */
 
 .panel-readout { min-height: 500px; }
 
@@ -500,7 +500,7 @@ textarea#jd-textarea:focus-visible {
   transform: translateY(4px);
 }
 
-/* ---- Results: orchestrated reveal ---- */
+/* Results: orchestrated reveal */
 
 .readout-results:not([hidden]) > * { animation: riseIn 0.5s var(--ease) both; }
 .readout-results:not([hidden]) > *:nth-child(1) { animation-delay: 0.02s; }
@@ -769,7 +769,7 @@ textarea#jd-textarea:focus-visible {
   margin: 0;
 }
 
-/* ---- Footer ---- */
+/* Footer */
 
 .site-footer {
   max-width: 1320px;
@@ -842,7 +842,7 @@ textarea#jd-textarea:focus-visible {
 .footer-repo-link:hover { color: var(--accent); }
 .footer-repo-link svg { width: 11px; height: 11px; }
 
-/* ---- Reduced motion ---- */
+/* Reduced motion */
 
 @media (prefers-reduced-motion: reduce) {
   .spinner,
