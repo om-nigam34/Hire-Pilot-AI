@@ -1,118 +1,81 @@
 (() => {
   "use strict";
 
-  const GAUGE_CX = 100;
-  const GAUGE_CY = 105;
-  const GAUGE_R = 78;
+  // 1. Score ring ------------------------------------------------------
 
-  function valueToAngle(value) {
-    const clamped = Math.max(0, Math.min(100, value));
-    return -90 + (clamped / 100) * 180;
+  const RING_R = 68;
+  const RING_CX = 84;
+  const RING_CY = 84;
+  const CIRCUMFERENCE = 2 * Math.PI * RING_R;
+
+  function tierLabel(score) {
+    if (score >= 75) return "Strong match";
+    if (score >= 50) return "Partial match";
+    return "Needs work";
   }
 
-  function polarPoint(angleDeg, radius) {
-    const rad = (angleDeg * Math.PI) / 180;
-    return {
-      x: GAUGE_CX + radius * Math.sin(rad),
-      y: GAUGE_CY - radius * Math.cos(rad),
-    };
-  }
-
-  function describeArc(startValue, endValue, radius) {
-    const startAngle = valueToAngle(startValue);
-    const endAngle = valueToAngle(endValue);
-    const start = polarPoint(startAngle, radius);
-    const end = polarPoint(endAngle, radius);
-    return `M ${start.x.toFixed(2)} ${start.y.toFixed(2)} A ${radius} ${radius} 0 0 1 ${end.x.toFixed(2)} ${end.y.toFixed(2)}`;
-  }
-
-  function buildGaugeSVG(score) {
+  function buildGaugeSVG() {
     const svg = document.getElementById("gauge-svg");
-    svg.innerHTML = ""; // Clear previous render
-
+    svg.innerHTML = "";
     const ns = "http://www.w3.org/2000/svg";
-    const track = radius => {
-      const path = document.createElementNS(ns, "path");
-      path.setAttribute("d", describeArc(0, 100, radius));
-      path.setAttribute("fill", "none");
-      path.setAttribute("stroke", "#1E2A42");
-      path.setAttribute("stroke-width", "14");
-      path.setAttribute("stroke-linecap", "round");
-      return path;
-    };
-    svg.appendChild(track(GAUGE_R));
 
-    // Colored zones, matching an altimeter-style readout
+    const track = document.createElementNS(ns, "circle");
+    track.setAttribute("cx", RING_CX);
+    track.setAttribute("cy", RING_CY);
+    track.setAttribute("r", RING_R);
+    track.setAttribute("fill", "none");
+    track.setAttribute("stroke", "#20232D");
+    track.setAttribute("stroke-width", "11");
+    svg.appendChild(track);
 
-    const zones = [
-      { from: 0, to: 40, color: "#7A3232" },
-      { from: 40, to: 70, color: "#7A5A22" },
-      { from: 70, to: 100, color: "#1F6B4C" },
-    ];
+    const progress = document.createElementNS(ns, "circle");
+    progress.setAttribute("id", "gauge-progress");
+    progress.setAttribute("cx", RING_CX);
+    progress.setAttribute("cy", RING_CY);
+    progress.setAttribute("r", RING_R);
+    progress.setAttribute("fill", "none");
+    progress.setAttribute("stroke", "#F5A623");
+    progress.setAttribute("stroke-width", "11");
+    progress.setAttribute("stroke-linecap", "round");
+    progress.setAttribute("transform", `rotate(-90 ${RING_CX} ${RING_CY})`);
+    progress.style.strokeDasharray = `${CIRCUMFERENCE}`;
+    progress.style.strokeDashoffset = `${CIRCUMFERENCE}`;
+    progress.style.transition = "stroke-dashoffset 1.05s cubic-bezier(0.16,1,0.3,1)";
+    svg.appendChild(progress);
 
-    zones.forEach(zone => {
-      const path = document.createElementNS(ns, "path");
-      path.setAttribute("d", describeArc(zone.from, zone.to, GAUGE_R));
-      path.setAttribute("fill", "none");
-      path.setAttribute("stroke", zone.color);
-      path.setAttribute("stroke-width", "6");
-      path.setAttribute("stroke-linecap", "butt");
-      path.setAttribute("transform", `translate(0, 0)`);
-      path.setAttribute("d", describeArc(zone.from, zone.to, GAUGE_R - 12));
-      svg.appendChild(path);
-    });
+    return progress;
+  }
 
-    // Tick marks at 0/25/50/75/100
-    [0, 25, 50, 75, 100].forEach(tick => {
-      const angle = valueToAngle(tick);
-      const outer = polarPoint(angle, GAUGE_R + 10);
-      const inner = polarPoint(angle, GAUGE_R - 2);
-      const line = document.createElementNS(ns, "line");
-      line.setAttribute("x1", inner.x);
-      line.setAttribute("y1", inner.y);
-      line.setAttribute("x2", outer.x);
-      line.setAttribute("y2", outer.y);
-      line.setAttribute("stroke", "#5C6B87");
-      line.setAttribute("stroke-width", "1.5");
-      svg.appendChild(line);
-    });
-
-    const needleAngle = valueToAngle(score);
-    const needleGroup = document.createElementNS(ns, "g");
-    needleGroup.setAttribute("transform", `rotate(${needleAngle} ${GAUGE_CX} ${GAUGE_CY})`);
-    needleGroup.setAttribute("class", "gauge-needle");
-
-    const needleLine = document.createElementNS(ns, "line");
-    needleLine.setAttribute("x1", GAUGE_CX);
-    needleLine.setAttribute("y1", GAUGE_CY);
-    needleLine.setAttribute("x2", GAUGE_CX);
-    needleLine.setAttribute("y2", GAUGE_CY - (GAUGE_R - 16));
-    needleLine.setAttribute("stroke", "#F5A623");
-    needleLine.setAttribute("stroke-width", "3");
-    needleLine.setAttribute("stroke-linecap", "round");
-    needleGroup.appendChild(needleLine);
-    svg.appendChild(needleGroup);
-
-    const hub = document.createElementNS(ns, "circle");
-    hub.setAttribute("cx", GAUGE_CX);
-    hub.setAttribute("cy", GAUGE_CY);
-    hub.setAttribute("r", "5");
-    hub.setAttribute("fill", "#F5A623");
-    svg.appendChild(hub);
+  function animateValue(el, to, duration) {
+    const start = performance.now();
+    const from = 0;
+    function tick(now) {
+      const t = Math.min((now - start) / duration, 1);
+      const eased = 1 - Math.pow(1 - t, 3);
+      el.textContent = Math.round(from + (to - from) * eased);
+      if (t < 1) requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
   }
 
   function drawGauge(score) {
-    buildGaugeSVG(0);
-    document.getElementById("gauge-value").textContent = "0";
-    const steps = 24;
-    let i = 0;
-    const interval = setInterval(() => {
-      i += 1;
-      const eased = score * (i / steps);
-      buildGaugeSVG(eased);
-      document.getElementById("gauge-value").textContent = Math.round(eased);
-      if (i >= steps) clearInterval(interval);
-    }, 16);
+    const clamped = Math.max(0, Math.min(100, Number(score) || 0));
+    const progress = buildGaugeSVG();
+
+    // Force layout so the browser registers the starting offset before we
+    // animate to the target — otherwise the transition is skipped.
+    // eslint-disable-next-line no-unused-expressions
+    progress.getBoundingClientRect();
+
+    requestAnimationFrame(() => {
+      const offset = CIRCUMFERENCE * (1 - clamped / 100);
+      progress.style.strokeDashoffset = `${offset}`;
+    });
+
+    animateValue(document.getElementById("gauge-value"), Math.round(clamped), 1050);
+
+    const tierEl = document.getElementById("gauge-tier");
+    if (tierEl) tierEl.textContent = tierLabel(clamped);
   }
 
   // 2. Inputs — dropzone + textarea wiring
@@ -191,8 +154,12 @@
     let i = 0;
     el.textContent = LOADING_MESSAGES[0];
     return setInterval(() => {
-      i = (i + 1) % LOADING_MESSAGES.length;
-      el.textContent = LOADING_MESSAGES[i];
+      el.classList.add("msg-fade");
+      setTimeout(() => {
+        i = (i + 1) % LOADING_MESSAGES.length;
+        el.textContent = LOADING_MESSAGES[i];
+        el.classList.remove("msg-fade");
+      }, 200);
     }, 1400);
   }
 
@@ -211,7 +178,7 @@
       errorEl.hidden = false;
       return;
     }
-    
+
     if (textarea.value.trim().length < 40) {
       errorEl.textContent = "Paste the full job description (it looks too short).";
       errorEl.hidden = false;
@@ -362,7 +329,7 @@
       list.innerHTML = "";
 
       if (!data.sessions || data.sessions.length === 0) {
-        list.innerHTML = '<li class="flightlog-empty">No sessions logged yet. Run your first analysis to start a flight log.</li>';
+        list.innerHTML = '<li class="flightlog-empty">No sessions logged yet. Run your first analysis to start a history log.</li>';
         return;
       }
 
@@ -387,7 +354,7 @@
 
   async function loadSessionIntoView(sessionId) {
     showState("readout-loading");
-    document.getElementById("loading-message").textContent = "Pulling session from the flight log…";
+    document.getElementById("loading-message").textContent = "Pulling up that session…";
     try {
       const res = await fetch(`/api/session/${sessionId}`);
       const data = await res.json();
