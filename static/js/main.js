@@ -1,7 +1,7 @@
 (() => {
   "use strict";
 
-  // 1. Score ring ------------------------------------------------------
+  // 1. Score ring
 
   const RING_R = 68;
   const RING_CX = 84;
@@ -78,7 +78,7 @@
     if (tierEl) tierEl.textContent = tierLabel(clamped);
   }
 
-  // 2. Inputs — dropzone + textarea wiring
+  // 2. Inputs —> dropzone + textarea wiring
 
   function initInputs() {
     const dropzone = document.getElementById("dropzone");
