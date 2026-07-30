@@ -55,7 +55,7 @@ JSON Response -> Frontend Dashboard
 
 | Layer | Technology |
 |---|---|
-| Backend | Flask, Python 3.10 |
+| Backend | Flask, Python |
 | AI / Inference | LLM API |
 | Semantic Scoring | sentence-transformers |
 | PDF Parsing | PyPDF2 / pdfplumber |
