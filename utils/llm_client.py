@@ -5,7 +5,6 @@ import os
 import json
 from groq import Groq
 
-
 class LLMClientError(Exception):
     # raised when the LLM API call fails
     pass
@@ -54,6 +53,7 @@ def _call_json(client: Groq, system_prompt: str, user_prompt: str) -> dict:
             "The model didn't return valid JSON. Raw response was:\n"
             f"{raw_content}"
         ) from exc
+
 
 
 #  Call 1: evaluate
