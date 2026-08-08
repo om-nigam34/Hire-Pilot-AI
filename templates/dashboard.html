@@ -1,0 +1,166 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard — HirePilot AI{% endblock %}
+
+{% block topbar_right %}
+  <span class="topbar-username">Signed in as <strong>{{ user.username }}</strong></span>
+  <a class="topbar-link" href="{{ url_for('logout') }}">Log Out</a>
+{% endblock %}
+
+{% block content %}
+
+    <!-- LEFT: Flight Plan -- inputs -->
+
+    <section class="panel panel-input" aria-labelledby="flightplan-heading">
+      <div class="panel-header">
+        <span class="panel-eyebrow">01 · INPUT</span>
+        <h2 id="flightplan-heading">Flight Plan</h2>
+        <p class="panel-desc">Upload your resume and the job you're targeting.</p>
+      </div>
+
+      <form id="analyze-form" novalidate>
+        <label class="field-label" for="resume-input">Resume (PDF)</label>
+        <div class="dropzone" id="dropzone" tabindex="0" role="button" aria-describedby="dropzone-filename">
+          <input type="file" id="resume-input" name="resume" accept="application/pdf" hidden />
+          <div class="dropzone-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M12 15V4"/>
+              <path d="M7.5 8.5L12 4L16.5 8.5"/>
+              <path d="M4.5 15V18.5C4.5 19.6 5.4 20.5 6.5 20.5H17.5C18.6 20.5 19.5 19.6 19.5 18.5V15"/>
+            </svg>
+          </div>
+          <div class="dropzone-text">
+            <strong>Click to upload</strong> or drag a PDF here
+          </div>
+          <div class="dropzone-filename" id="dropzone-filename">No file loaded</div>
+        </div>
+
+        <label class="field-label" for="jd-textarea">Target job description</label>
+        <textarea
+          id="jd-textarea"
+          name="jd_text"
+          rows="10"
+          placeholder="Paste the full job description here — the more complete it is, the more specific the results will be."
+        ></textarea>
+        <div class="field-hint" id="jd-char-count">0 characters</div>
+
+        <button type="submit" id="analyze-btn" class="btn-engage">
+          <span class="btn-engage-label">Run Analysis</span>
+          <svg class="btn-engage-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M7 4L19 12L7 20V4Z"/>
+          </svg>
+        </button>
+
+        <p class="form-error" id="form-error" role="alert" hidden></p>
+      </form>
+
+      <div class="flightlog">
+        <div class="panel-eyebrow">FLIGHT LOG · RECENT SESSIONS</div>
+        <ul class="flightlog-list" id="flightlog-list">
+          {% if history %}
+            {% for item in history %}
+            <li class="flightlog-item" data-session-id="{{ item.id }}">
+              <span class="flightlog-score">{{ "%.0f"|format(item.similarity_score) }}</span>
+              <span class="flightlog-title">{{ item.jd_title }}</span>
+              <span class="flightlog-time">{{ item.created_at.split('T')[0] }}</span>
+            </li>
+            {% endfor %}
+          {% else %}
+            <li class="flightlog-empty">No sessions yet. Run your first analysis to start a log.</li>
+          {% endif %}
+        </ul>
+      </div>
+    </section>
+
+    <!-- RIGHT: Readout -- results -->
+
+    <section class="panel panel-readout" aria-labelledby="readout-heading">
+      <div class="panel-header">
+        <span class="panel-eyebrow">02 · READOUT</span>
+        <h2 id="readout-heading">Instrument Readout</h2>
+      </div>
+
+      <!-- Empty state -->
+
+      <div class="readout-empty" id="readout-empty">
+        <div class="readout-empty-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M3 13H8L10 16H14L16 13H21"/>
+            <path d="M5.5 5.5H18.5L21 13V18C21 19.1 20.1 20 19 20H5C3.9 20 3 19.1 3 18V13L5.5 5.5Z"/>
+          </svg>
+        </div>
+        <p>Upload a resume and a job description, then run the analysis.</p>
+      </div>
+
+      <!-- Loading state -->
+
+      <div class="readout-loading" id="readout-loading" hidden>
+        <div class="radar-sweep" aria-hidden="true"></div>
+        <p id="loading-message">Reading instruments…</p>
+      </div>
+
+      <!-- Results -->
+
+      <div class="readout-results" id="readout-results" hidden>
+
+        <div class="gauge-row">
+          <div class="gauge-wrap">
+            <svg id="gauge-svg" viewBox="0 0 200 130" aria-hidden="true"></svg>
+            <div class="gauge-readout">
+              <span class="gauge-value" id="gauge-value">0</span>
+              <span class="gauge-max">/100</span>
+            </div>
+          </div>
+          <div class="gauge-caption">
+            <span class="panel-eyebrow">MATCH READING</span>
+            <p id="overall-summary">—</p>
+            <p class="gauge-disclaimer">One signal, not the full verdict.</p>
+          </div>
+        </div>
+
+        <div class="readout-grid">
+
+          <div class="readout-block">
+            <h3 class="block-title"><span class="light light-red"></span> Missing skills</h3>
+            <ul class="tag-list" id="missing-skills-list"></ul>
+          </div>
+
+          <div class="readout-block">
+            <h3 class="block-title"><span class="light light-amber"></span> ATS keyword gaps</h3>
+            <ul class="tag-list tag-list-mono" id="keyword-gaps-list"></ul>
+          </div>
+
+        </div>
+
+        <div class="readout-block readout-block-wide">
+          <h3 class="block-title"><span class="light light-amber"></span> Weak bullets → rewritten</h3>
+          <ul class="bullet-compare-list" id="bullet-compare-list"></ul>
+        </div>
+
+        <div class="readout-block readout-block-wide">
+          <h3 class="block-title"><span class="light light-green"></span> Likely interview questions</h3>
+          <ul class="question-list" id="question-list"></ul>
+        </div>
+
+      </div>
+
+      <!-- Error state -->
+
+      <div class="readout-error" id="readout-error" hidden>
+        <div class="readout-error-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M12 3.5L21.5 19.5H2.5L12 3.5Z"/>
+            <path d="M12 10V14"/>
+            <circle cx="12" cy="17" r="0.9" fill="currentColor" stroke="none"/>
+          </svg>
+        </div>
+        <p id="readout-error-message">Something went wrong.</p>
+      </div>
+
+    </section>
+
+{% endblock %}
+
+{% block extra_scripts %}
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+{% endblock %}
