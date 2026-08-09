@@ -15,6 +15,8 @@ app.config["SECRET_KEY"] = os.environ.get("FLASK_SECRET_KEY", "dev-only-insecure
 app.config["MAX_CONTENT_LENGTH"] = 8 * 1024 * 1024  # 8MB upload capacity
 app.config["SESSION_COOKIE_HTTPONLY"] = True
 app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
+# Only send the login cookie over HTTPS. Off by default so local still works.
+app.config["SESSION_COOKIE_SECURE"] = os.environ.get("SESSION_COOKIE_SECURE", "false").lower() == "true"
 app.permanent_session_lifetime = timedelta(days=7)
 
 if not os.environ.get("FLASK_SECRET_KEY"):
@@ -148,7 +150,7 @@ def analyze():
     except LLMResponseError as exc:
         return jsonify(error=f"The evaluation step returned something we couldn't parse: {exc}"), 502
 
-    #  Step 4: LLM call 2 - generate (chained on step 3)
+    #  Step 4: LLM call 2 - generate -- chained on step 3
 
     try:
         generation = generate_improvements(evaluation, resume_text, jd_text)
