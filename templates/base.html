@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}HirePilot AI{% endblock %}</title>
+  <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='favicon.svg') }}" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+</head>
+<body>
+
+  <div class="scanline-overlay" aria-hidden="true"></div>
+
+  <header class="topbar">
+    <a class="topbar-brand" href="{{ url_for('dashboard') if session.get('user_id') else url_for('landing') }}">
+      <span class="topbar-mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 3L3 10.5L10.5 13L13.5 20.5L21 3Z"/>
+          <path d="M10.5 13L21 3"/>
+        </svg>
+      </span>
+      <span class="topbar-title">HIREPILOT<span class="topbar-title-accent">AI</span></span>
+      <span class="topbar-subtitle">CAREER READINESS SYSTEM</span>
+    </a>
+    <div class="topbar-right">
+      {% block topbar_right %}{% endblock %}
+    </div>
+  </header>
+
+  <main class="{% block main_class %}deck{% endblock %}">
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-brand">
+      <span class="footer-mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 3L3 10.5L10.5 13L13.5 20.5L21 3Z"/>
+          <path d="M10.5 13L21 3"/>
+        </svg>
+      </span>
+      <span>HirePilot<span class="footer-brand-accent">AI</span></span>
+    </div>
+    <p class="footer-tagline">Get a clear picture of how your resume matches the role you want — gaps, rewrites, and the questions to prepare for.</p>
+    <div class="site-footer-bottom">
+      <span class="footer-copyright">© 2026 HirePilot AI</span>
+      <span class="footer-sep" aria-hidden="true">·</span>
+      <span class="footer-credit">Built by Om Nigam</span>
+      <span class="footer-sep" aria-hidden="true">·</span>
+      <a class="footer-repo-link" href="https://github.com/om-nigam34/Hire-Pilot-AI" target="_blank" rel="noopener noreferrer">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M9 6H6C4.9 6 4 6.9 4 8V18C4 19.1 4.9 20 6 20H16C17.1 20 18 19.1 18 18V15"/>
+          <path d="M13 4H20V11"/>
+          <path d="M20 4L11 13"/>
+        </svg>
+        GitHub
+      </a>
+    </div>
+  </footer>
+
+  {% block extra_scripts %}{% endblock %}
+</body>
+</html>
