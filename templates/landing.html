@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}HirePilot AI — Career Readiness System{% endblock %}
+
+{% block topbar_right %}
+  <a class="topbar-link" href="{{ url_for('login') }}">Log In</a>
+  <a class="topbar-cta" href="{{ url_for('signup') }}">Get Started</a>
+{% endblock %}
+
+{% block main_class %}landing-main{% endblock %}
+
+{% block content %}
+
+  <section class="hero">
+    <div class="hero-text">
+      <span class="hero-eyebrow">CAREER READINESS SYSTEM</span>
+      <h1>Know your match score <span class="accent">before</span> a recruiter does.</h1>
+      <p>Upload a resume and a job description. Get a match score, the gaps behind it, rewritten bullets, and the interview questions to expect — in one run.</p>
+      <div class="hero-ctas">
+        <a class="hero-cta-primary" href="{{ url_for('signup') }}">Get Started</a>
+        <a class="hero-cta-secondary" href="{{ url_for('login') }}">Log In</a>
+      </div>
+    </div>
+
+    <div class="hero-instrument" aria-hidden="true">
+      <div class="hero-instrument-ring"></div>
+      <div class="hero-instrument-ticks">
+        <span></span><span></span><span></span><span></span>
+        <span></span><span></span><span></span><span></span>
+      </div>
+      <div class="hero-instrument-face">
+        <span class="hero-instrument-value">87</span>
+        <span class="hero-instrument-label">MATCH</span>
+      </div>
+      <div class="hero-instrument-needle"></div>
+      <div class="hero-instrument-hub"></div>
+      <div class="hero-instrument-lights">
+        <span class="light-dot light-dot-red"></span>
+        <span class="light-dot light-dot-amber"></span>
+        <span class="light-dot light-dot-green"></span>
+      </div>
+    </div>
+  </section>
+
+{% endblock %}
