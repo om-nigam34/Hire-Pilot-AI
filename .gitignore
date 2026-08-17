@@ -3,6 +3,8 @@
 
 # Virtual environment
 env/
+venv/
+.venv/
 
 # Flask instance folder
 instance/
@@ -16,6 +18,14 @@ __pycache__/
 *.db
 *.sqlite
 *.sqlite3
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Logs
+*.log
 
 # IDE
 .vscode/
