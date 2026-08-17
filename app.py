@@ -193,6 +193,11 @@ def too_large(_exc):
     return jsonify(error="That file is too large - please keep resumes under 8MB."), 413
 
 
+@app.errorhandler(500)
+def server_error(_exc):
+    return jsonify(error="Something went wrong on our end. Please try again."), 500
+
+
 if __name__ == "__main__":
     db.init_db()
     debug_mode = os.environ.get("FLASK_DEBUG", "false").lower() == "true"
